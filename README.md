@@ -31,6 +31,7 @@ No tiene dependencias: solo Node.js.
    - **Instance Type:** Free
 4. En **Environment Variables** agregá:
    - `WORKER_URL` = la dirección de tu worker, por ejemplo `https://voxelcraft.tuusuario.workers.dev`. Va sin barra al final.
+   - `SERVER_KEY` = tu clave secreta (mirá la sección 3b).
 5. Tocá **Create Web Service** y esperá que diga **Live**.
 6. Copiá la dirección que te da Render, por ejemplo `https://voxelcraft-server.onrender.com`.
 
@@ -46,6 +47,28 @@ En Cloudflare → Workers → tu worker → **Settings → Variables and Secrets
 | `SERVER_MOTD` | *(opcional)* un mensaje de bienvenida que ven todos al conectarse |
 
 Guardá y listo: el juego ya usa el servidor. En el panel **Multijugador** (tecla J) vas a ver `servidor ✅`.
+
+## 3b. El mundo 24/7 (servidor público con cuenta)
+
+El servidor también tiene un **mundo que existe siempre**, aunque no haya nadie conectado. En el menú del juego aparece el botón **🌐 Servidor 24/7**. Solo entran jugadores con cuenta.
+
+El servidor guarda:
+- los bloques;
+- los cofres;
+- la hora del día;
+- la posición, la vida y el inventario de cada cuenta.
+
+Todo queda en la base **D1** del worker, así que no se pierde aunque Render se reinicie. Para que pueda guardar, inventá una clave secreta larga (por ejemplo `vxc-8f3k2-pt9q-zz71`) y ponela **igual en los dos lados**:
+
+| Dónde | Variable | Valor |
+|---|---|---|
+| Render → Environment | `SERVER_KEY` | tu clave secreta |
+| Cloudflare → worker → Variables (como *Secret*) | `SERVER_KEY` | la misma clave |
+| Cloudflare → worker → Variables *(opcional)* | `SERVER_ADMINS` | usuarios administradores separados por coma, ej: `ivkvk,amigo2` |
+
+- **Reglas del mundo 24/7:** se juega en supervivencia con dificultad Normal (se cambia en `pubDiff` dentro del worker).
+- **Administradores:** son los de `SERVER_ADMINS`. Pueden usar el modo creativo.
+- **Si falta `SERVER_KEY`:** el mundo funciona igual, pero se borra cuando Render se reinicia. El juego avisa con un mensaje.
 
 ## 4. Mantenerlo prendido 24/7 con UptimeRobot
 
